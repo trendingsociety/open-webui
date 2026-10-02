@@ -144,6 +144,12 @@ if frontend_loader.exists():
     except Exception as e:
         logging.error(f'An error occurred: {e}')
 
+# Trending Society patch: apply deployment brand assets after the build assets above are copied,
+# because this block clears STATIC_DIR first. No-op unless BRANDING_OVERRIDE_UNDER_50_USERS=true.
+from open_webui.env import copy_brand_assets_into_static_dir
+
+copy_brand_assets_into_static_dir()
+
 
 # --- Storage Provider ---
 

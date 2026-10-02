@@ -3,3 +3,4 @@
 ARG OPEN_WEBUI_TAG=v0.11.4
 FROM ghcr.io/open-webui/open-webui:${OPEN_WEBUI_TAG}
 COPY backend/open_webui/env.py /app/backend/open_webui/env.py
+COPY backend/open_webui/config.py /app/backend/open_webui/config.py

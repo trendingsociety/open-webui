@@ -982,8 +982,6 @@ def copy_brand_assets_into_static_dir() -> None:
             shutil.copy2(asset, STATIC_DIR / asset.name)
             log.info('Brand asset %s copied into %s', asset.name, STATIC_DIR)
 
-
-copy_brand_assets_into_static_dir()
 WEBUI_BUILD_HASH = os.getenv('WEBUI_BUILD_HASH', 'dev-build')
 TRUSTED_SIGNATURE_KEY = os.getenv('TRUSTED_SIGNATURE_KEY', '')
 
