@@ -1,0 +1,5 @@
+# Thin overlay on the upstream release image: only the patched backend files change.
+# Bump OPEN_WEBUI_TAG together with merging the matching upstream tag into this branch.
+ARG OPEN_WEBUI_TAG=v0.11.4
+FROM ghcr.io/open-webui/open-webui:${OPEN_WEBUI_TAG}
+COPY backend/open_webui/env.py /app/backend/open_webui/env.py

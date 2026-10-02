@@ -948,8 +948,15 @@ if LICENSE_PUBLIC_KEY:
 # visual, textual, symbolic identifiers, metadata, and surrounding UI.
 # Do not alter, remove, obscure, or replace it except as LICENSE permits:
 # https://docs.openwebui.com/license.
+# Trending Society patch: branding from config.
+# LICENSE section 4 permits replacing Open WebUI branding only for deployments with
+# fewer than 50 end users in any rolling 30-day period (or with written permission or an
+# enterprise licence). Set BRANDING_OVERRIDE_UNDER_50_USERS=true only on such a deployment.
+BRANDING_OVERRIDE_UNDER_50_USERS = os.getenv('BRANDING_OVERRIDE_UNDER_50_USERS', 'False').lower() == 'true'
+BRAND_ASSETS_DIR = os.getenv('BRAND_ASSETS_DIR', '')
+
 WEBUI_NAME = os.getenv('WEBUI_NAME', 'Open WebUI')
-if WEBUI_NAME != 'Open WebUI':
+if WEBUI_NAME != 'Open WebUI' and not BRANDING_OVERRIDE_UNDER_50_USERS:
     WEBUI_NAME += ' (Open WebUI)'
 
 # LICENSE covers this Open WebUI branding surface, including this favicon
@@ -957,6 +964,26 @@ if WEBUI_NAME != 'Open WebUI':
 # Do not alter, remove, obscure, or replace it except as LICENSE permits:
 # https://docs.openwebui.com/license.
 WEBUI_FAVICON_URL = 'https://openwebui.com/favicon.png'
+if BRANDING_OVERRIDE_UNDER_50_USERS and os.getenv('BRAND_FAVICON_URL'):
+    WEBUI_FAVICON_URL = os.environ['BRAND_FAVICON_URL']
+
+
+def copy_brand_assets_into_static_dir() -> None:
+    """Copy every file in BRAND_ASSETS_DIR over the same-named file in STATIC_DIR."""
+    if not (BRANDING_OVERRIDE_UNDER_50_USERS and BRAND_ASSETS_DIR):
+        return
+    brand_dir = Path(BRAND_ASSETS_DIR)
+    if not brand_dir.is_dir():
+        log.warning('BRAND_ASSETS_DIR %s is not a directory; keeping default branding', brand_dir)
+        return
+    STATIC_DIR.mkdir(parents=True, exist_ok=True)
+    for asset in brand_dir.iterdir():
+        if asset.is_file():
+            shutil.copy2(asset, STATIC_DIR / asset.name)
+            log.info('Brand asset %s copied into %s', asset.name, STATIC_DIR)
+
+
+copy_brand_assets_into_static_dir()
 WEBUI_BUILD_HASH = os.getenv('WEBUI_BUILD_HASH', 'dev-build')
 TRUSTED_SIGNATURE_KEY = os.getenv('TRUSTED_SIGNATURE_KEY', '')
 
